@@ -3,7 +3,7 @@ import { populateRandom } from "./population/random.js"
 
 export class World {
   constructor(rows, columns, population) {
-    if (!population) {
+    if (!Object.keys(population).length) {
       population = populateRandom(rows, columns)
     }
     this.rows = rows

@@ -15,7 +15,7 @@ export class Drawer {
         this.columns = Math.floor(width / this.kernel)
         this.normalizeScale()
 
-        this.clicked = null
+        this.clicked = {}
     }
     get population() {
         return this.clicked
