@@ -1,5 +1,5 @@
-import { Drawer } from "./dom/drawer.js";
-import { World } from "./gameplay/world.js";
+import { Drawer } from "./dom/drawer.js"
+import { World } from "./gameplay/world.js"
 import { initialSettings } from './config.js'
 
 const settings = {
@@ -9,7 +9,7 @@ const settings = {
 }
 
 let world
-let drawer = new Drawer(initialSettings.gridWidth * settings.gridWidthMultiplier || initialSettings.gridWidth);
+let drawer = new Drawer(initialSettings.gridWidth * settings.gridWidthMultiplier || initialSettings.gridWidth)
 const startButton = document.getElementById('start')
 const speed = document.getElementById('speed')
 const countOfCells = document.getElementById('countOfCells')
@@ -19,18 +19,18 @@ drawer.addListener()
 startButton.addEventListener('click',startListener)
 
 speed.addEventListener('change', function(event) {
-	settings.timeFrameMultiplier = event.target.value;
+	settings.timeFrameMultiplier = event.target.value
 })
 
 countOfCells.addEventListener('change', function(event) {
-	settings.gridWidthMultiplier = event.target.value;
+	settings.gridWidthMultiplier = event.target.value
 	createNewDrawer()
 })
 
 function createNewDrawer() {
 	drawer.reset({grid: true})
 	drawer.removeListener()
-	drawer = new Drawer(initialSettings.gridWidth * settings.gridWidthMultiplier);
+	drawer = new Drawer(initialSettings.gridWidth * settings.gridWidthMultiplier)
 	drawer.addListener()
 	drawer.drawGrid()
 }
@@ -38,16 +38,20 @@ function createNewDrawer() {
 
 function startListener() {
 	drawer.removeListener()
-	world = new World(drawer.rows, drawer.columns, drawer.population);
+	world = new World(drawer.rows, drawer.columns, drawer.population)
+
 	gameLoop(initialSettings.timeFrame * settings.timeFrameMultiplier)
-	startButton.removeEventListener('click', startListener)
+	
+	speed.setAttribute("disabled", "disabled")
+	countOfCells.setAttribute("disabled", "disabled")
+	startButton.setAttribute("disabled", "disabled")
 }	
 
 
 function liveGeneration() {
-	drawer.reset({ grid: true });
-	drawer.drawWorld(world);
-	world.evolve();
+	drawer.reset({ grid: true })
+	drawer.drawWorld(world)
+	world.evolve()
 }
 
 function gameLoop() {
@@ -56,11 +60,11 @@ function gameLoop() {
 		liveGeneration()
 		setInterval(() => {
 			liveGeneration()
-		}, initialSettings.timeFrame * settings.timeFrameMultiplier);
+		}, initialSettings.timeFrame * settings.timeFrameMultiplier)
 
 	} else {
 
-		liveGeneration();
+		liveGeneration()
 		setTimeout(() =>  {
 			window.requestAnimationFrame(gameLoop),
 			initialSettings.timeFrame
