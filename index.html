@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life</title>
+    <link rel="stylesheet" href="styles.css">
+
+</head>
+<body>
+    <header class="header">
+        <h1>
+            Conway's Game of Life
+        </h1>
+    </header>
+    <main class="game">
+        <div class="game__controls">
+            <div class="game__speed">
+                <div class="game__label">Speed</div>
+                <select name="speed" id="speed">
+                    <option value="0">So fast, how it possible</option>
+                    <option value="100">0.1s</option>
+                    <option value="1000">1s</option>
+                </select>
+            </div>
+            <div class="game__cells-counter">
+                <div class="game__label">Field size</div>
+                <select name="countOfCells" id="countOfCells">
+                    <option value="10">100x100</option>
+                    <option value="100">10x10</option>
+                </select>
+            </div>
+            <button class="game__button game__button-start" id="start">start</button>
+        </div>
+        <canvas class="game__field" width="1001" height="1001" id="canvas"></canvas>
+    </main>
+    <script type="module" src="./main.js" async></script>
+</body>
+</html>
