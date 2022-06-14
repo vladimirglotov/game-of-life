@@ -21,7 +21,6 @@ startButton.addEventListener('click',startListener)
 speed.addEventListener('change', function(event) {
 	settings.timeFrameMultiplier = event.target.value
 })
-
 countOfCells.addEventListener('change', function(event) {
 	settings.gridWidthMultiplier = event.target.value
 	createNewDrawer()
@@ -67,8 +66,7 @@ function gameLoop() {
 		liveGeneration()
 		setTimeout(() =>  {
 			window.requestAnimationFrame(gameLoop),
-			initialSettings.timeFrame
+			4 // minimal value for html5
 		});
 	}
 };
-
