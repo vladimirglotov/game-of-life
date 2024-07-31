@@ -12,21 +12,14 @@
     display: flex;
     padding: 0 120px 100px 0;
 }
-.game__controls {
-    height: 140px;
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    justify-content: space-between; 
+
+.controls {
     text-align: center;   
     margin-right: 20px;
 }
 
-.game__controls select,
-.game__controls .game__cells-counter,
-.game__controls button {
+.controls .controlItem {
+    margin-bottom: 12px;
     width: 100%;
-}
-.game__controls select {
     text-align: center;
 }

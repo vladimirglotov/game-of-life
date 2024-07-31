@@ -15,7 +15,7 @@
         </h1>
     </header>
     <main class="game">
-        <div class="game__controls">
+        <div class="controls">
             <!-- <div class="game__speed">
                 <div class="game__label">Speed</div>
                 <select name="speed" id="speed">
@@ -23,17 +23,26 @@
                     <option value="100">0.1s</option>
                     <option value="1000">1s</option>
                 </select>
-            </div>
-            <div class="game__cells-counter">
-                <div class="game__label">Field size</div>
-                <select name="countOfCells" id="countOfCells">
-                    <option value="10">100x100</option>
-                    <option value="100">10x10</option>
-                </select>
             </div> -->
-            <button class="game__button game__button-start" id="start">start</button>
+            <div class="controlItem">
+                <div>Field size (px)</div>
+                <select name="countOfCells" id="countOfCells">
+                    <option value="1000">1000x1000</option>
+                    <option value="500">500x500</option>
+                    <option value="100" selected>100x100</option>
+                </select>
+            </div>
+            <div class="controlItem">
+                <div>Cell size (px)</div>
+                <select name="sizeOfCell" id="sizeOfCell">
+                    <option value="1">1</option>
+                    <option value="10" selected>10</option>
+                </select>
+            </div>
+            <button class="controlItem" id="start">start</button>
+            <button class="controlItem" id="reset" disabled>reset</button>
         </div>
-        <canvas class="game__field" width="1001" height="1001" id="canvas"></canvas>
+        <canvas class="gameField" width="1000" height="1000" id="canvas"></canvas>
     </main>
     <script type="module" src="./main.js" async></script>
 </body>

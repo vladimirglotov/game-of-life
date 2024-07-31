@@ -1,152 +1,170 @@
-import { Cell } from './cell.js'
-import { createCell } from './cell.js'
+import { Cell } from './cell.js';
+import { createCell } from './cell.js';
 
 export class GameWorld {
 
-    static numColumns = 1000; // 1-100-1000
-    static numRows = 1000;
-
-    constructor(canvasId, kernel) {
-        this.canvas = document.getElementById(canvasId);
+    constructor(canvas, gridSize, cellSize) {
+        this.startListener = null;
+        this.canvas = canvas;
         this.context = this.canvas.getContext('2d');
-        const [width, height] = [canvas.offsetWidth, canvas.offsetHeight]
-        this.clicked = {}
+        this.kernel = cellSize;
+        this.numCellsPerSide = gridSize / this.kernel;
+        this.clicked = {};
         this.gameObjects = [];
-        this.width = width
-        this.height = height
-        this.kernel = kernel
-        this.normalizeScale()
+        this.normalizeScale();
     }
-    // Улучшаем отображение
-    normalizeScale = () => {
-        const { devicePixelRatio: pixelRatio } = window
+
+    updateDimensions(gridSize, cellSize) {
+        this.clicked = {};
+        this.gameObjects = [];
+        this.kernel = cellSize;
+        this.numCellsPerSide = gridSize / this.kernel;
+        this.normalizeScale();
+    }
+
+    normalizeScale() {
+        const { devicePixelRatio: pixelRatio } = window;
 
         if (pixelRatio > 1) {
-            canvas.width = this.width * pixelRatio
-            canvas.height = this.height * pixelRatio
-            canvas.style.width = `${this.width}px`
-            canvas.style.height = `${this.height}px`
-            this.context.scale(pixelRatio, pixelRatio)
+            const numCellsPerSide = this.numCellsPerSide * this.kernel;
+    
+            this.canvas.width = numCellsPerSide * pixelRatio;
+            this.canvas.height = numCellsPerSide * pixelRatio;
+            this.canvas.style.width = `${numCellsPerSide}px`;
+            this.canvas.style.height = `${numCellsPerSide}px`;
+            this.context.scale(pixelRatio, pixelRatio);
         }
     }
-    addListener() {
-        this.canvas.addEventListener('mouseup', this.clickListener)
+
+    addStartButtonListener() {
+        this.startListener = this.canvas.addEventListener('mouseup', this.clickListener);
     }
+
+    removeStartButtonListener() {
+        this.canvas.removeEventListener('mouseup', this.clickListener);
+    }
+
     clickListener = (e) => {
-        let z = window.getComputedStyle(canvas).zoom || 1   
-        const x = e.pageX/z - e.target.offsetLeft
-        const y = e.pageY/z - e.target.offsetTop
+        let z = window.getComputedStyle(canvas).zoom || 1;
+        const rect = this.canvas.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / z;
+        const y = (e.clientY - rect.top) / z;
 
-        const indexes = this.calculateIndexes({x,y})
-
-        if (typeof this.clicked[`${indexes.x}:${indexes.y}`] === "undefined") {
-            this.clicked[`${indexes.x}:${indexes.y}`] = createCell(indexes.x, indexes.y)
+        const indexes = this.calculateIndexes({x,y});
+        const cell = `${indexes.x}:${indexes.y}`;
+    
+        if (this.clicked[cell] === undefined) {
+            this.clicked[cell] = createCell(indexes.x, indexes.y);
         } else {
-            delete this.clicked[`${indexes.x}:${indexes.y}`]
+            delete this.clicked[cell];
         }
-        this.clearField()
-        this.createGrid()
-        this.createWorld({random: false})
-        this.drawWorld()
+    
+        this.clearCanvas();
+        this.createGrid();
+        this.createPopulation({random: false});
+        this.drawPopulation();
     }
-    // Вычисление индекса из координат канвас
+    // Calculating the index from canvas coordinates
     calculateIndexes(path) {
         const indexes = {
             x: Math.floor(path.x / this.kernel),
             y: Math.floor(path.y / this.kernel)
         }
-        return indexes
+        return indexes;
     }
-    // Создаем популяцию
-    createWorld({random}) {
-        this.gameObjects = []
-        for (let y = 0; y < GameWorld.numColumns; y++) {
-            for (let x = 0; x < GameWorld.numRows; x++) {
-                const alive = random 
-                ? Math.random() > 0.5
-                : !!this.clicked[`${x}:${y}`] 
-                    ? 1 
-                    : 0
-                this.gameObjects.push(new Cell(this.context, x, y, alive, this.kernel, this.kernel))
+
+    createPopulation({random}) {
+        this.gameObjects = [];
+        const width = this.numCellsPerSide;
+        for (let y = 0; y < width; y++) {
+            for (let x = 0; x < width; x++) {
+                const alive = random ? Math.random() > 0.5 : !!this.clicked[`${x}:${y}`];
+                this.gameObjects.push(new Cell(this.context, x, y, alive, this.kernel));
             }
         }
     }
-    // Рисуем сетку
+
     createGrid() {
-        this.context.strokeStyle = "rgba(0,0,0, 0.3)"
-        for (let i = 0; i < this.width; i += this.kernel) {
-            this.context.beginPath()
-            this.context.moveTo(i, 0)
-            this.context.lineTo(i, this.height)
-            this.context.stroke()
-
-            this.context.beginPath()
-            this.context.moveTo(0, i)
-            this.context.lineTo(this.width, i)
-            this.context.stroke()
+        const numCellsPerSide = this.numCellsPerSide * this.kernel; // Учитываем размер клеток
+        this.context.strokeStyle = "rgba(0,0,0, 0.4)";
+        for (let i = 0; i <= numCellsPerSide; i += this.kernel) {
+            this.context.beginPath();
+            this.context.moveTo(i, 0);
+            this.context.lineTo(i, numCellsPerSide);
+            this.context.stroke();
+    
+            this.context.beginPath();
+            this.context.moveTo(0, i);
+            this.context.lineTo(numCellsPerSide, i);
+            this.context.stroke();
         }
     }
-    // Очищаем канвас
-    clearField() {
-        this.context.clearRect(0, 0, this.width, this.height)
+
+    clearCanvas() {
+        const numCellsPerSide = this.numCellsPerSide;
+        this.context.clearRect(0, 0, numCellsPerSide * this.kernel, numCellsPerSide * this.kernel);
     }
+
     isAlive(x, y) {
-        const xPos = this.returnToField(x, GameWorld.numRows)
-        const yPos = this.returnToField(y, GameWorld.numRows)
-        // if (x < 0 || x >= GameWorld.numColumns || y < 0 || y >= GameWorld.numRows){
-        //     return false;
-        // }
-        return this.gameObjects[this.gridToIndex(xPos, yPos)].alive?1:0
+        const numCellsPerSide = this.numCellsPerSide;
+
+        x = this.returnToField(x, numCellsPerSide);
+        y = this.returnToField(y, numCellsPerSide);
+
+        const index = this.gridToIndex(x, y);
+
+        return this.gameObjects[index]?.alive ? 1 : 0;
     }
+
     returnToField(pos, rows) {
-        if (pos > rows - 1) {
-          return (-pos + rows)
-        } else if (pos < 0) {
-          return pos + rows
-        } else {
-          return pos
-        }
-      }
+        return (pos + rows) % rows;
+    }
+
     gridToIndex(x, y){
-        return x + (y * GameWorld.numColumns)
+        return x + (y * this.numCellsPerSide);
     }
-    // Рисуем популяцию
-    drawWorld() {
-        for (let i = 0; i < this.gameObjects.length; i++) {
-            this.gameObjects[i].draw()
+
+    drawPopulation() {
+        for (const cell of this.gameObjects) {
+            cell.draw();
         }
     }
-    // Выяисление популяции
-    checkSurrounding () {
+
+    calculatePopulation () {
         if (!this.gameObjects.length) {
-            this.createWorld({random: true})
+            this.createPopulation({ random: true });
         }
-        // Цикл по всем клеткам
-        for (let x = 0; x < GameWorld.numColumns; x++) {
-            for (let y = 0; y < GameWorld.numRows; y++) {
+        // Loop through all cells
+        const numCellsPerSide = this.numCellsPerSide;
+        for (let x = 0; x < numCellsPerSide; x++) {
+            for (let y = 0; y < numCellsPerSide; y++) {
 
-                // Считаем живых соседей
-                let numAlive = this.isAlive(x - 1, y - 1) + this.isAlive(x, y - 1) + this.isAlive(x + 1, y - 1) + this.isAlive(x - 1, y) + this.isAlive(x + 1, y) + this.isAlive(x - 1, y + 1) + this.isAlive(x, y + 1) + this.isAlive(x + 1, y + 1)
-                let centerIndex = this.gridToIndex(x, y)
+                // calculating alive neighbors
+                const underX = x - 1;
+                const underY = y - 1;
+                const upperX = x + 1;
+                const upperY = y + 1;
 
-                if (numAlive == 2){
-                    // Ничего
-                    this.gameObjects[centerIndex].nextAlive = this.gameObjects[centerIndex].alive
-                }else if (numAlive == 3){
-                    // Делаем живой
-                    this.gameObjects[centerIndex].nextAlive = true
-                }else{
-                    // Делаем мертвой
-                    this.gameObjects[centerIndex].nextAlive = false
+                const numAlive = this.isAlive(underX, underY) + this.isAlive(x, underY) + this.isAlive(upperX, underY) + this.isAlive(underX, y) + this.isAlive(upperX, y) + this.isAlive(underX, upperY) + this.isAlive(x, upperY) + this.isAlive(upperX, upperY);
+                const centerIndex = this.gridToIndex(x, y);
+                const currentCell = this.gameObjects[centerIndex];
+                
+                if (numAlive === 2) {
+                    // Nothing
+                    currentCell.nextAlive = currentCell.alive;
+                } else if (numAlive === 3) {
+                    // Making it alive
+                    currentCell.nextAlive = true;
+                } else {
+                    // Making it dead
+                    currentCell.nextAlive = false;
                 }
             }
         }
-
-        // Обновляем состояние клеток
-        for (let i = 0; i < this.gameObjects.length; i++) {
-            this.gameObjects[i].alive = this.gameObjects[i].nextAlive
+    
+        for (const cell of this.gameObjects) {
+            cell.alive = cell.nextAlive;
+            // cell.draw() for lil bit more fps uncomment this row and comment the drawPopulation method in loop in main.js
         }
     }
-
-
-}
+}    
