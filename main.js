@@ -1,35 +1,49 @@
 import { GameWorld } from './gameplay/gameWorld.js';
 
 let gameWorld = null;
-let gridSize = 100;
+let gridSize = 500;
 let cellSize = 10;
 let animationFrameId = null;
+
+const fps = 30;
+let interval = 1000 / fps;
+let lastTime = 0;
 
 
 const startButton = document.getElementById('start');
 const resetButton = document.getElementById('reset');
+const fpsSelect = document.getElementById('speed');
 const countOfCellsSelect = document.getElementById('countOfCells');
 const sizeOfCellSelect = document.getElementById('sizeOfCell');
 const canvas = document.getElementById('canvas');
 
-countOfCellsSelect.addEventListener('change', updateGrid);
-sizeOfCellSelect.addEventListener('change', updateGrid);
+fpsSelect.addEventListener('change', () => updateGrid());
+countOfCellsSelect.addEventListener('change', () => updateGrid(true));
+sizeOfCellSelect.addEventListener('change', () => updateGrid(true));
 startButton.addEventListener('click', start);
 resetButton.addEventListener('click', reset);
 
-function updateGrid() {
-    gridSize = parseInt(countOfCellsSelect.value, 10);
-    cellSize = parseInt(sizeOfCellSelect.value, 10);
-	reset();
+function updateGrid(needToReset = false) {
+    const fpsValue = 1000 / parseInt(fpsSelect.value, 10) || 30;
+
+    gridSize = parseInt(countOfCellsSelect.value, 10) || 500;
+    cellSize = parseInt(sizeOfCellSelect.value, 10) || 10;
+	interval = Number.isFinite(fpsValue) ? fpsValue : 0;
+
+	needToReset && reset();
 }
 
-function gameLoop() {
-	gameWorld.clearCanvas();
-	gameWorld.calculatePopulation();
-	gameWorld.createGrid();
-	gameWorld.drawPopulation();
+function gameLoop(timestamp) {
+	if (timestamp - lastTime >= interval) {
+		lastTime = timestamp;
+		
+		gameWorld.clearCanvas();
+		gameWorld.calculatePopulation();
+		gameWorld.createGrid();
+		gameWorld.drawPopulation();
+	}
 
-	animationFrameId = window.requestAnimationFrame(gameLoop);
+	animationFrameId = requestAnimationFrame(gameLoop);
 }
 
 function start() {
@@ -39,7 +53,7 @@ function start() {
 }
 
 function reset() {
-	window.cancelAnimationFrame(animationFrameId);
+	cancelAnimationFrame(animationFrameId);
 	animationFrameId = null;
 	gameWorld.clearCanvas();
 	if (startButton.disabled) {

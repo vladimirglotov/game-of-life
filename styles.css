@@ -1,16 +1,23 @@
 * {
     box-sizing: border-box;
 }
+
+body {
+    font-family: Verdana, sans-serif;
+}
+
 .header {
     padding: 30px 0 10px 0;
     text-align: center;
 }
 .game {
     margin: 0 auto;
-    text-align: right;
     justify-content: center;
     display: flex;
-    padding: 0 120px 100px 0;
+}
+
+.gameField {
+    margin-right: 120px;
 }
 
 .controls {
@@ -18,8 +25,18 @@
     margin-right: 20px;
 }
 
-.controls .controlItem {
+.controls label {
+    margin-bottom: 4px;
+}
+
+.controlItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     margin-bottom: 12px;
     width: 100%;
+}
+
+.controlItem select {
     text-align: center;
 }

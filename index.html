@@ -6,44 +6,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Life</title>
     <link rel="stylesheet" href="styles.css">
-
 </head>
 <body>
     <header class="header">
-        <h1>
-            Conway's Game of Life
-        </h1>
+        <h1>Conway's Game of Life</h1>
     </header>
     <main class="game">
         <div class="controls">
-            <!-- <div class="game__speed">
-                <div class="game__label">Speed</div>
+            <!-- Field controls -->
+              <div class="controlItem">
+                <label for="speed">Speed</label>
                 <select name="speed" id="speed">
-                    <option value="0">So fast, how it possible</option>
-                    <option value="100">0.1s</option>
-                    <option value="1000">1s</option>
+                    <option value="10">10fps</option>
+                    <option value="30" selected>30fps</option>
+                    <option value="60">60fps</option>
+                    <option value="0">Maximum fps</option>
                 </select>
-            </div> -->
+            </div>
             <div class="controlItem">
-                <div>Field size (px)</div>
+                <label for="countOfCells">Field size</label>
                 <select name="countOfCells" id="countOfCells">
-                    <option value="1000">1000x1000</option>
-                    <option value="500">500x500</option>
-                    <option value="100" selected>100x100</option>
+                    <option value="1000">1000x1000px</option>
+                    <option value="500" selected>500x500px</option>
+                    <option value="100">100x100px</option>
                 </select>
             </div>
+            <!-- Cell size control -->
             <div class="controlItem">
-                <div>Cell size (px)</div>
+                <label for="sizeOfCell">Cell size</label>
                 <select name="sizeOfCell" id="sizeOfCell">
-                    <option value="1">1</option>
-                    <option value="10" selected>10</option>
+                    <option value="1">1px</option>
+                    <option value="10" selected>10px</option>
                 </select>
             </div>
-            <button class="controlItem" id="start">start</button>
-            <button class="controlItem" id="reset" disabled>reset</button>
+            <!-- Control buttons -->
+            <button class="controlItem" id="start">Start</button>
+            <button class="controlItem" id="reset" disabled>Reset</button>
         </div>
+        <!-- Game canvas -->
         <canvas class="gameField" width="1000" height="1000" id="canvas"></canvas>
     </main>
+    <!-- Async script loading -->
     <script type="module" src="./main.js" async></script>
 </body>
 </html>
