@@ -1,6 +1,7 @@
 import { GameWorld } from './gameplay/gameWorld.js';
 
 let gameWorld = null;
+
 let gridSize = 500;
 let cellSize = 10;
 let animationFrameId = null;
@@ -8,7 +9,6 @@ let animationFrameId = null;
 const fps = 30;
 let interval = 1000 / fps;
 let lastTime = 0;
-
 
 const startButton = document.getElementById('start');
 const resetButton = document.getElementById('reset');
@@ -37,8 +37,8 @@ function gameLoop(timestamp) {
 	if (timestamp - lastTime >= interval) {
 		lastTime = timestamp;
 		
-		gameWorld.clearCanvas();
 		gameWorld.calculatePopulation();
+		gameWorld.clearCanvas();
 		gameWorld.createGrid();
 		gameWorld.drawPopulation();
 	}
@@ -56,9 +56,11 @@ function reset() {
 	cancelAnimationFrame(animationFrameId);
 	animationFrameId = null;
 	gameWorld.clearCanvas();
+
 	if (startButton.disabled) {
 		[startButton.disabled, resetButton.disabled] = [resetButton.disabled, startButton.disabled];
 	}
+
 	init();
 }
 
@@ -66,6 +68,7 @@ function init() {
 	gameWorld = new GameWorld(canvas, gridSize, cellSize);
 
 	gameWorld.createGrid();
+	gameWorld.createPopulation({ random: true })
 	gameWorld.addStartButtonListener();
 }
 

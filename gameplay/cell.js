@@ -4,11 +4,9 @@ export class Cell {
 		this.context = context;
 		this.cellSize = cellSize;
 		
-		// Позиция клетки
 		this.gridX = gridX;
 		this.gridY = gridY;
 		
-		// Живая или нет
 		this.alive = alive;
 	}
 
